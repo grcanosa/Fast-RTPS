@@ -185,9 +185,9 @@ XMLP_ret XMLParser::parseXMLTypes(tinyxml2::XMLElement* p_root)
     }
     else // Directly root is TYPES?
     {
-        tinyxml2::XMLElement* p_element = p_root->FirstChildElement(TYPE);                
+        tinyxml2::XMLElement* p_element = p_root->FirstChildElement(TYPE);
         while(p_element != nullptr)
-        {            
+        {
             ret = parseXMLDynamicType(p_element);
             if (ret != XMLP_ret::XML_OK)
             {
@@ -563,7 +563,7 @@ static p_dynamictypebuilder_t getDiscriminatorTypeBuilder(const std::string &dis
     if (disc.compare(BOOLEAN) == 0)
     {
         return factory->CreateBoolBuilder();
-    }    
+    }
     else if (disc.compare(TBYTE) == 0)
     {
         return factory->CreateByteBuilder();
@@ -610,9 +610,9 @@ static p_dynamictypebuilder_t getDiscriminatorTypeBuilder(const std::string &dis
     }
     else if (disc.compare(WCHAR) == 0)
     {
-        return factory->CreateChar16Builder();        
+        return factory->CreateChar16Builder();
     }
-    
+
     //TODO add CreateString
 
     return XMLProfileManager::getDynamicTypeByName(disc);
@@ -627,16 +627,16 @@ XMLP_ret XMLParser::parseXMLAliasDynamicType(tinyxml2::XMLElement* p_root)
         <long dimensions="2,2"/>
     </typedef>
     */
-    XMLP_ret ret = XMLP_ret::XML_OK;    
-    const char* name = p_root->Attribute(NAME);    
+    XMLP_ret ret = XMLP_ret::XML_OK;
+    const char* name = p_root->Attribute(NAME);
     const char* type = p_root->Attribute(TYPE);
     const char* typeNonBasicName = p_root->Attribute(NON_BASIC_TYPE_NAME);
     const char* memberArray = p_root->Attribute(ARRAY_DIMENSIONS);
     const char* memberSequence = p_root->Attribute(SEQ_MAXLENGTH);
-    const char* memberMap = p_root->Attribute(MAP_MAXLENGTH);    
+    const char* memberMap = p_root->Attribute(MAP_MAXLENGTH);
 
     p_dynamictypebuilder_t valueBuilder;
-    
+
     if (type != nullptr)
     {
         if (strcmp(type, NON_BASIC_TYPE) == 0)
@@ -649,15 +649,15 @@ XMLP_ret XMLParser::parseXMLAliasDynamicType(tinyxml2::XMLElement* p_root)
             {
                 logError(XMLPARSER, "Error parsing member type: Not found.");
                 ret = XMLP_ret::XML_ERROR;
-            }        
+            }
         }
 
         if ((memberArray != nullptr) || (memberSequence != nullptr) || (memberMap != nullptr))
         {
             valueBuilder = parseXMLMemberDynamicType(p_root , nullptr, MEMBER_ID_INVALID);
-        }        
+        }
         else
-        {         
+        {
             valueBuilder = getDiscriminatorTypeBuilder(type);
         }
 
@@ -673,10 +673,10 @@ XMLP_ret XMLParser::parseXMLAliasDynamicType(tinyxml2::XMLElement* p_root)
             XMLProfileManager::insertDynamicTypeByName(name, typeBuilder);
         }
     }
-    else 
+    else
     {
         logError(XMLPARSER, "Error parsing alias type: Type not defined.");
-        ret = XMLP_ret::XML_ERROR;          
+        ret = XMLP_ret::XML_ERROR;
     }
     return ret;
 }
@@ -735,7 +735,7 @@ XMLP_ret XMLParser::parseXMLStructDynamicType(tinyxml2::XMLElement* p_root)
     uint32_t mId = 0;
     for (tinyxml2::XMLElement *p_element = p_root->FirstChildElement();
             p_element != nullptr; p_element = p_element->NextSiblingElement())
-    {  
+    {
         p_dynamictypebuilder_t mType = parseXMLMemberDynamicType(p_element, typeBuilder, mId++);
         if (mType == nullptr)
         {
@@ -895,10 +895,10 @@ p_dynamictypebuilder_t XMLParser::parseXMLMemberDynamicType(tinyxml2::XMLElement
         logError(XMLPARSER, "Error parsing member: Node not found.");
         return nullptr;
     }
-    
+
     const char* memberType = p_root->Attribute(TYPE);
     const char* memberNonBasicTypeName = p_root->Attribute(NON_BASIC_TYPE_NAME);
-    const char* memberName = p_root->Attribute(NAME);    
+    const char* memberName = p_root->Attribute(NAME);
     const char* memberArray = p_root->Attribute(ARRAY_DIMENSIONS);
     const char* memberSequence = p_root->Attribute(SEQ_MAXLENGTH);
     const char* memberMap = p_root->Attribute(MAP_MAXLENGTH);
@@ -932,13 +932,13 @@ p_dynamictypebuilder_t XMLParser::parseXMLMemberDynamicType(tinyxml2::XMLElement
         {
             logError(XMLPARSER, "Error parsing member type: Not found.");
             return nullptr;
-        }        
+        }
     }
 
     types::DynamicTypeBuilder* memberBuilder = nullptr;
     types::DynamicTypeBuilderFactory* factory = types::DynamicTypeBuilderFactory::GetInstance();
 
-    if (memberSequence != nullptr)    
+    if (memberSequence != nullptr)
     {
         /*
             In sequences allowed formats are (complex format includes the basic):
@@ -948,7 +948,7 @@ p_dynamictypebuilder_t XMLParser::parseXMLMemberDynamicType(tinyxml2::XMLElement
             </sequence>
             In this example, inner sequence's name is ignored and can be omited.
          */
-        
+
         p_dynamictypebuilder_t contentType;
         /* FIXME complex sequence
          if (seqType == nullptr)
@@ -957,7 +957,7 @@ p_dynamictypebuilder_t XMLParser::parseXMLMemberDynamicType(tinyxml2::XMLElement
         }
         else*/
         {
-            
+
             contentType = getDiscriminatorTypeBuilder(memberType);
         }
 
@@ -1007,7 +1007,7 @@ p_dynamictypebuilder_t XMLParser::parseXMLMemberDynamicType(tinyxml2::XMLElement
             In this example, inner maps names are ignored and can be omited.
          */
         // Parse key
-        
+
         //const char* keyType = p_root->Attribute(KEY);
         p_dynamictypebuilder_t keyTypeBuilder;
         if (memberKeyType == nullptr)
