@@ -279,6 +279,7 @@ const char* MAP_KEY_TYPE = "key_type";
 const char* ENUMERATOR = "enumerator";
 const char* NON_BASIC_TYPE = "nonBasic";
 const char* NON_BASIC_TYPE_NAME = "nonBasicTypeName";
+const char* KEY = "key";
 
 } /* xmlparser */
 } /* namespace */
