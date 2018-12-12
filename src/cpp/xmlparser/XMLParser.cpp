@@ -612,8 +612,14 @@ static p_dynamictypebuilder_t getDiscriminatorTypeBuilder(const std::string &dis
     {
         return factory->CreateChar16Builder();
     }
-
-    //TODO add CreateString
+    else if (disc.compare(STRING) == 0)
+    {
+        return factory->CreateStringBuilder();
+    }
+    else if (disc.compare(WSTRING) == 0)
+    {
+        return factory->CreateWstringBuilder();
+    }
 
     return XMLProfileManager::getDynamicTypeByName(disc);
 }
@@ -952,12 +958,6 @@ p_dynamictypebuilder_t XMLParser::parseXMLMemberDynamicType(tinyxml2::XMLElement
          */
 
         p_dynamictypebuilder_t contentType;
-        /* FIXME complex sequence
-         if (seqType == nullptr)
-        {
-            contentType = parseXMLMemberDynamicType(p_root->FirstChildElement(), nullptr, MEMBER_ID_INVALID);
-        }
-        else*/
         {
 
             contentType = getDiscriminatorTypeBuilder(memberType);
@@ -1014,13 +1014,8 @@ p_dynamictypebuilder_t XMLParser::parseXMLMemberDynamicType(tinyxml2::XMLElement
         p_dynamictypebuilder_t keyTypeBuilder;
         if (memberMapKeyType == nullptr)
         {
-            //tinyxml2::XMLElement* keyElement = p_root->FirstChildElement(KEY);
-            //if (keyElement == nullptr)
-            //{
-                logError(XMLPARSER, "Error parsing key_type element: Not found.");
-                return nullptr;
-            //}
-            //keyTypeBuilder = parseXMLMemberDynamicType(keyElement->FirstChildElement(), nullptr, MEMBER_ID_INVALID);
+            logError(XMLPARSER, "Error parsing key_type element: Not found.");
+            return nullptr;
         }
         else
         {
@@ -1038,13 +1033,8 @@ p_dynamictypebuilder_t XMLParser::parseXMLMemberDynamicType(tinyxml2::XMLElement
         p_dynamictypebuilder_t valueTypeBuilder;
         if (memberType == nullptr)
         {
-            //tinyxml2::XMLElement* valueElement = p_root->FirstChildElement(VALUE_TYPE);
-            //if (valueElement == nullptr)
-            //{
-                logError(XMLPARSER, "Error parsing value_value element: Not found.");
-                return nullptr;
-            //}
-            //valueTypeBuilder = parseXMLMemberDynamicType(valueElement->FirstChildElement(), nullptr, MEMBER_ID_INVALID);
+            logError(XMLPARSER, "Error parsing value_value element: Not found.");
+            return nullptr;
         }
         else
         {
@@ -1078,10 +1068,6 @@ p_dynamictypebuilder_t XMLParser::parseXMLMemberDynamicType(tinyxml2::XMLElement
             //factory->DeleteBuilder(innerBuilder);
         }
     }
-
-//TODO add arrays
-
-
     else if (strncmp(memberType, BOOLEAN, 8) == 0)
     {
         if (!isArray)
