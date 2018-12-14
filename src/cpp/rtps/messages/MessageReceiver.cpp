@@ -536,24 +536,22 @@ bool MessageReceiver::proc_Submsg_Data(CDRMessage_t* msg,SubmessageHeader_t* smh
         }
         else if(keyFlag)
         {
-            Endianness_t previous_endian = msg->msg_endian;
-            if(ch.serializedPayload.encapsulation == PL_CDR_BE)
-                msg->msg_endian = BIGEND;
-            else if(ch.serializedPayload.encapsulation == PL_CDR_LE)
-                msg->msg_endian = LITTLEEND;
+            if (payload_size <= 0)
+            {
+                logWarning(RTPS_MSG_IN, IDSTRING"Serialized Payload value invalid (" << payload_size << ")");
+                return false;
+            }
+
+            if (payload_size <= 16)
+            {
+                memcpy(ch.instanceHandle.value, &msg->buffer[msg->pos], payload_size);
+            }
             else
             {
-                logError(RTPS_MSG_IN,IDSTRING"Bad encapsulation for KeyHash and status parameter list");
-                return false;
+                logWarning(RTPS_MSG_IN, IDSTRING"Ignoring Serialized Payload for too large key-only data"
+                    "(" << payload_size << ")");
             }
-            //uint32_t param_size;
-            ParameterList_t parameter_list;
-            if(ParameterList::readParameterListfromCDRMsg(msg, &parameter_list, &ch, false) <= 0)
-            {
-                logInfo(RTPS_MSG_IN,IDSTRING"SubMessage Data ERROR, keyFlag ParameterList");
-                return false;
-            }
-            msg->msg_endian = previous_endian;
+            msg->pos += payload_size;
         }
     }
     //Is the final message?
